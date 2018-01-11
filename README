@@ -1,0 +1,20 @@
+    txpulses - transmit IR signal with pigpiod
+    Johann Wiesner 2018
+    dst0815@gmail.com
+
+txpulses.h - c function for generating and playing waves with pigpiod
+
+txpulses.pl - perl test script and emulation of remote control WH-TA01EE for inverter Toshiba Ras Suzumi
+
+
+perl usage:
+git clone https://github.com/dst0815/txpulses
+cd txpulses
+h2xs -n txpulses txpulses.h -lpigpiod_if2
+mv txpulses.* txpulses
+cd txpulses
+perl Makefile.PL
+make
+
+
+
