@@ -55,6 +55,8 @@ my $resetfilter=0;
 #my $comfort_until=time
 my $hipower=0;
 my $eco=0;
+my @codes;
+my $bins;
 
 given ($cmd) {
 	when (/^HEAT/) {
@@ -63,6 +65,9 @@ given ($cmd) {
 		$ir{9}[6] &= ~0b11110111; $ir{9}[6] |= $fans{$fan};
 					  $ir{9}[6] |= $modes{$cmd};
 		$ir{9}[8] = $ir{9}[4] ^ $ir{9}[5] ^ $ir{9}[6] ^ $ir{9}[7];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s][%s]",$bins,$bins);
 	}
 	when (/^COOL/) {
 		$bytes=9;
@@ -70,6 +75,9 @@ given ($cmd) {
 		$ir{9}[6] &= ~0b11110111; $ir{9}[6] |= $fans{$fan};
 					  $ir{9}[6] |= $modes{$cmd};
 		$ir{9}[8] = $ir{9}[4] ^ $ir{9}[5] ^ $ir{9}[6] ^ $ir{9}[7];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s][%s]",$bins,$bins);
 	}
 	when (/^DRY/) {
 		$bytes=9;
@@ -77,6 +85,9 @@ given ($cmd) {
 		$ir{9}[6] &= ~0b11110111; $ir{9}[6] |= $fans{$fan};
 					  $ir{9}[6] |= $modes{$cmd};
 		$ir{9}[8] = $ir{9}[4] ^ $ir{9}[5] ^ $ir{9}[6] ^ $ir{9}[7];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s][%s]",$bins,$bins);
 	}
 	when (/^AUTO/) {
 		$bytes=9;
@@ -84,6 +95,9 @@ given ($cmd) {
 		$ir{9}[6] &= ~0b11110111; $ir{9}[6] |= $fans{$fan};
 					  $ir{9}[6] |= $modes{$cmd};
 		$ir{9}[8] = $ir{9}[4] ^ $ir{9}[5] ^ $ir{9}[6] ^ $ir{9}[7];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s][%s]",$bins,$bins);
 	}
 	when (/^OFF/) {
 		$bytes=9;
@@ -92,6 +106,9 @@ given ($cmd) {
 					  $ir{9}[6] |= $modes{$cmd};
 		                          $ir{9}[6] |= 0b00000100;
 		$ir{9}[8] = $ir{9}[4] ^ $ir{9}[5] ^ $ir{9}[6] ^ $ir{9}[7];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s][%s]",$bins,$bins);
 	}
 #	when (/^ECO/) {
 #                $bytes=10;
@@ -108,39 +125,47 @@ given ($cmd) {
 #		$ir{10}[8] &= ~0b00000011; $ir{10}[6] |= 0b00000001;
 #		$ir{10}[9] = $ir{10}[4] ^ $ir{10}[5] ^ $ir{10}[6] ^ $ir{10}[7] ^ $ir{10}[8];
 #	}
-	when (/^SWING/) {
+	when (/^SWINGOFF/) {
 		$bytes=7;
 		$ir{7}[5] &= ~0b00000011; $ir{7}[5] |= 0b00000010;
 		$ir{7}[6] = $ir{7}[4] ^ $ir{7}[5];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s]",$bins);
 	}
-	when (/^SWINGOFF/) {
+	when (/^SWING$/) {
                 $bytes=7;
 		$ir{7}[5] &= ~0b00000011; $ir{7}[5] |= 0b00000001;
 		$ir{7}[6] = $ir{7}[4] ^ $ir{7}[5];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s]",$bins);
 	}
 	when (/^SWINGFIX/) {
                 $bytes=7;
 		$ir{7}[5] &= ~0b00000011; $ir{7}[5] |= 0b00000000;
 		$ir{7}[6] = $ir{7}[4] ^ $ir{7}[5];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s]",$bins);
 	}
 	when (/^RESETFILTER/) {
                 $bytes=7;
 		$ir{7}[5] &= ~0b01100000; $ir{7}[5] |= 0b01100000;
 		$ir{7}[6] = $ir{7}[4] ^ $ir{7}[5];
+                @codes = @{ %ir{$bytes} };
+		$bins=join("", map { sprintf "%08b", $_ } @codes);
+		$bins=sprintf("[%s]",$bins);
 	}
 	default { exit; }
 }
 
-my @codes = @{ %ir{$bytes} };
 
 
 use ExtUtils::testlib;   # adds blib/* directories to @INC
 use txpulses;
 
 my $pin=1<<12;
-
-my $bins=join("", map { sprintf "%08b", $_ } @codes);
-$bins=sprintf("[%s][%s]",$bins,$bins);
 
 printf("Transmit: "); printf "%02x ", $_  for @codes;
 

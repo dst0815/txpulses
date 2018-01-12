@@ -15,33 +15,32 @@ INCLUDE: const-xs.inc
 
 #include <stdio.h>
 
-int txpulses(outPin,carrier,InitPulse,InitGap,onePulse,zeroPulse,Gap,pause,pulses)
-        uint32_t outPin;
-        int carrier;
-        int InitPulse;
-        int InitGap;
-        int onePulse;
-        int zeroPulse;
-        int Gap;
-        int pause;
-        char *pulses;
+int txpulses(pin, carrier, intro, intro2, tshort, tlong, tmargin, tseparator, const char *code)
+	uint32_t pin;
+	int carrier;
+	int intro;
+	int intro2;
+	int tshort;
+	int tlong;
+	int tmargin;
+	int tseparator;
+	char *code;
 
     CODE:
        int x = txpulses(
-               outPin,
-               carrier,
-               InitPulse,
-               InitGap,
-               onePulse,
-               zeroPulse,
-               Gap,
-               pause,
-               pulses);
+	pin,
+	carrier,
+	intro,
+	intro2,
+	tshort,
+	tlong,
+	tmargin,
+	tseparator,
+	*code);
 
 
 
         RETVAL = x;
     OUTPUT:
         RETVAL
-
 
